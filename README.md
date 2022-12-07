@@ -1,5 +1,5 @@
 # apaka: Automated PAcKaging for Autoproj
-[![Build Status](https://github.com/rock-core/tools-apaka/actions/workflows/test.yml/badge.svg?branch=testing)](https://github.com/rock-core/tools-apaka/actions/workflows/test.yml)
+[![Build Status](https://github.com/annaborn/tools-apaka/actions/workflows/test.yml/badge.svg)](https://github.com/annaborn/tools-apaka/actions/workflows/test.yml)
 
 
 * https://github.com/rock-core/tools-apaka
