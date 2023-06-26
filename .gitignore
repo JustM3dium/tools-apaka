@@ -2,3 +2,6 @@
 *test/workspace/build
 *test/workspace/install
 doc/
+.idea
+testBench
+
