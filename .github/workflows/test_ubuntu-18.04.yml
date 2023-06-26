@@ -2,7 +2,7 @@ name: ubuntu-18.04
 on: [push]
 jobs:
   unittests:
-    runs-on: self-hosted
+    runs-on: ubuntu-18.04
     steps:
       - name: Checkout
         uses: actions/checkout@v2
