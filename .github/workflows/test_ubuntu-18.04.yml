@@ -12,8 +12,5 @@ jobs:
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: current_branch
 
-      - name: Build 18.04
-        run: docker build -t 2maz/apaka:18.04 -f Dockerfile.1804 . --build-arg PKG_BRANCH=${{ steps.current_branch.outputs.branch }}
-
       - name: Test-on-ubuntu:18.04
-        run: docker run --privileged 2maz/apaka:18.04 /bin/sh -c "cd /home/docker/apaka/; BUNDLE_GEMFILE=/home/docker/apaka/test/workspace/.autoproj/Gemfile rake test"
+        run: docker run --privileged justmedium/apaka-test:18.04 /bin/sh -c "cd /home/docker/apaka/; BUNDLE_GEMFILE=/home/docker/apaka/test/workspace/.autoproj/Gemfile rake test"
