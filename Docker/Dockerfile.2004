@@ -1,6 +1,6 @@
 FROM ubuntu:20.04
 
-MAINTAINER 2maz "https://github.com/2maz"
+LABEL MAINTAINER="Bastian Seifert <dev@creativebubble.de>"
 
 # Optional arguments
 ARG PKG_BRANCH="master"

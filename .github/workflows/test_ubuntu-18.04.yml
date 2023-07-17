@@ -2,7 +2,7 @@ name: ubuntu-18.04
 on: [push]
 jobs:
   unittests:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -12,5 +12,8 @@ jobs:
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: current_branch
 
+      - name: Build Docker Container
+        run: docker build -t justm3dium/tools-apaka:18.04 -f Docker/Dockerfile.1804 .
+
       - name: Test-on-ubuntu:18.04
-        run: docker run --privileged justmedium/apaka-test:18.04 /bin/sh -c "cd /home/docker/apaka/; BUNDLE_GEMFILE=/home/docker/apaka/test/workspace/.autoproj/Gemfile rake test"
+        run: docker run --privileged justm3dium/tools-apaka:18.04 /bin/sh -c "cd /home/docker/apaka/; BUNDLE_GEMFILE=/home/docker/apaka/test/workspace/.autoproj/Gemfile rake test"
