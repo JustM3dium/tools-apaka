@@ -1,9 +1,8 @@
 # apaka: Automated PAcKaging for Autoproj
-[![ubuntu-18.04](https://github.com/JustM3dium/tools-apaka/actions/workflows/test.yml/badge.svg)](https://github.com/rock-core/tools-apaka/actions/workflows/test.yml)
-[![ubuntu-20.04](https://github.com/JustM3dium/tools-apaka/actions/workflows/test_ubuntu-20.04.yml/badge.svg)](https://github.com/rock-core/tools-apaka/actions/workflows/test_ubuntu-20.04.yml)
+[![ubuntu-18.04](https://github.com/JustM3dium/tools-apaka/actions/workflows/test_ubuntu-18.04.yml/badge.svg)](https://github.com/JustM3dium/tools-apaka/actions/workflows/test_ubuntu-18.04.yml)
+[![ubuntu-20.04](https://github.com/JustM3dium/tools-apaka/actions/workflows/test_ubuntu-20.04.yml/badge.svg)](https://github.com/JustM3dium/tools-apaka/actions/workflows/test_ubuntu-20.04.yml)
 
-
-* https://github.com/rock-core/tools-apaka
+* https://github.com/JustM3dium/tools-apaka
 
 Apaka allows you to create Debian packages for a given autoproj based workspace.
 A description of the general architecture is part for the following publication:
@@ -12,7 +11,7 @@ A description of the general architecture is part for the following publication:
 
 Clone the repository into an existing autoproj installation
 ```
-    git clone https://github.com/rock-core/tools-apaka tools/apaka
+    git clone https://github.com/JustM3dium/tools-apaka tools/apaka
 ```
 Add "- tools/apaka" to your autoproj/manifest under the layout section
 
