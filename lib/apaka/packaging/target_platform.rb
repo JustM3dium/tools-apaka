@@ -1,6 +1,10 @@
 require 'open3'
 require 'utilrb/logger'
+require 'nokogiri'
+require 'open-uri'
+
 require_relative 'config'
+
 
 module Apaka
     module Packaging
@@ -57,7 +61,7 @@ module Apaka
 
             # Autodetect the target platform (distribution release and architecture)
             def self.autodetect_target_platform
-                TargetPlatform.new(autodetect_linux_distribution_release, 
+                TargetPlatform.new(autodetect_linux_distribution_release,
                                    autodetect_dpkg_architecture)
             end
 
@@ -68,7 +72,7 @@ module Apaka
             def self.osdeps_release_tags= (tags)
                 @osdeps_release_tags = tags
             end
-            
+
             def self.ancestor_blacklist
                 @ancestor_blacklist || Set.new
             end
@@ -142,7 +146,7 @@ module Apaka
                 end
             end
 
-            # For Rock release this allow to check whether a ancestor given by the 
+            # For Rock release this allow to check whether a ancestor given by the
             # depends_on option for a release already contains the package
             # package Autobuild::Package
             def ancestorContains(package_name, cache_results = true)
@@ -237,6 +241,24 @@ module Apaka
                 contains?(package, cache_results)
             end
 
+            def error_title?(url)
+                begin
+                    doc = Nokogiri::HTML(URI.open(url))
+                    title = doc.css('title').first
+                    title_content = title.children.text
+
+                    if title_content.include? "Error"
+                        return false
+                    elsif title_content.include? package
+                        return true
+                    end
+                rescue OpenURI::HTTPError
+                    return false
+                end
+            end
+
+
+
             # Check if the given release contains
             # a package of the given name
             #
@@ -276,7 +298,7 @@ module Apaka
                 errorfile = nil
                 result = true
 
-                if !File.exist?(Apaka::Packaging.cache_dir)
+                unless File.exist?(Apaka::Packaging.cache_dir)
                     FileUtils.mkdir_p Apaka::Packaging.cache_dir
                 end
 
@@ -295,45 +317,46 @@ module Apaka
                     if cache_results && (File.exist?(outfile) || File.exist?(errorfile))
                         # query already done sometime before
                     else
-                        cmd = ["wget"]
-                        cmd << "-O" << outfile << "-o" << errorfile << url
+                        #cmd = ["wget"]
+                        #cmd << "-O" << outfile << "-o" << errorfile << url
+                        #
                         Apaka::Packaging.debug "TargetPlatform::contains: query with #{cmd.join(" ")}"
-                        _,_, status = Open3.capture3(cmd.join(" "))
-                        if !status.success?
-                            Apaka::Packaging.warn "TargetPlatform::contains: wget failed"
-                            next
-                        end
+                        #_,_, status = Open3.capture3(cmd.join(" "))
+                        #unless status.success?
+                        #    Apaka::Packaging.warn "TargetPlatform::contains: wget failed"
+                        #    next
+                        #end
                     end
 
                     if TargetPlatform::isUbuntu(release_name)
                         # -A1 -> 1 line after the match
                         # -m1 -> first match: we assume that the first date refers to the latest entry
                         # grep 'published': only published will be available otherwise there might be deleted,superseded
-                        if system("grep -i -A1 -m1 -e '[0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}' #{outfile} | grep -i 'published' > /dev/null 2>&1", :close_others => true)
-                            result = true
-                        end
+                        #if system("grep -i -A1 -m1 -e '[0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}' #{outfile} | grep -i 'published' > /dev/null 2>&1", :close_others => true)
+                        result = error_title?(url)
+                        #end
                         if Packaging::Config.packages_enforce_build.include?('gems')
                             if TargetPlatform::isRuby(package)
                                 Apaka::Packaging.info "TargetPlatform::contains returns false -- since configuration is set to forced manual build for all ruby packages: #{package}"
-                                result = false
+                                result = error_title?(url)
                             end
                         end
                     elsif TargetPlatform::isDebian(release_name)
                         # If file contains a response, then check for
                         # 'No such package'
-                        if !system("grep", "-i", "No such package", :in => outfile, [:out, :err] => "/dev/null", :close_others => true) && system("grep", "-i", "[a-zA-z]", :in => outfile, [:out, :err] => "/dev/null", :close_others => true)
-                            result = true
-                        end
+                        #if !system("grep", "-i", "No such package", :in => outfile, [:out, :err] => "/dev/null", :close_others => true) && system("grep", "-i", "[a-zA-z]", :in => outfile, [:out, :err] => "/dev/null", :close_others => true)
+                        result = error_title?(url)
+                        #end
                         if Packaging::Config.packages_enforce_build.include?('gems')
                             if TargetPlatform::isRuby(package)
                                 Apaka::Packaging.info "TargetPlatform::contains returns false -- since configuration is set to forced manual build for all ruby packages: #{package}"
-                                result = false
+                                result = error_title?(url)
                             end
                         end
                     elsif TargetPlatform::isRock(release_name)
-                        if !system("grep", "-i", " 404", :in => errorfile, [:out, :err] => "/dev/null", :close_others => true)
-                            result = true
-                        end
+                        #if !system("grep", "-i", " 404", :in => errorfile, [:out, :err] => "/dev/null", :close_others => true)
+                        result = error_title?(url)
+                        #end
                     end
                     if result
                         break
